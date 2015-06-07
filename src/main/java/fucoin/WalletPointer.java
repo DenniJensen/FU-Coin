@@ -1,6 +1,8 @@
 package fucoin;
 
-public class WalletPointer {
+import java.io.Serializable;
+
+public class WalletPointer implements Serializable {
   private final String address;
 
   public WalletPointer(String address) {

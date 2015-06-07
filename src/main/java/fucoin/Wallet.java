@@ -7,10 +7,17 @@ import java.util.Vector;
  */
 public interface Wallet {
   Vector<WalletPointer> join (WalletPointer walletPointer);
-  Vector<WalletPointer> searchWallet(String address);
+  Wallet searchWallet(String address);
 
   void storeOrUpdateWallet(Wallet w);
   void invalidateWallet(Wallet w);
   void receiveTransaction(int amount);
   void initKnownNodes(Vector<WalletPointer> walletPointers);
+
+  Vector<WalletPointer> getAllKnownNeighbors();
+  String getAddress();
+
+  void update(Wallet w);
+  int getMoneyAmount();
+  Vector<Wallet> getSynchronizedNeighbors();
 }
