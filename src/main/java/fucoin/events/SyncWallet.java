@@ -4,9 +4,6 @@ import fucoin.Wallet;
 
 import java.io.Serializable;
 
-/**
- * Created by dennish on 07/06/15.
- */
 public class SyncWallet implements Serializable {
   private Wallet wallet;
 

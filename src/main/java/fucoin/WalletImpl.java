@@ -57,13 +57,18 @@ public class WalletImpl implements Wallet, Comparable<Wallet>{
   }
 
   @Override
-  public void invalidateWallet(Wallet w) {
-
+  public void removeKnownNeighbor(String address) {
+    for (WalletPointer walletPointer : allKnownNeighbors) {
+      if (walletPointer.getAddress().equals(address)) {
+        allKnownNeighbors.remove(walletPointer);
+        return;
+      }
+    }
   }
 
   @Override
   public void receiveTransaction(int amount) {
-
+    this.moneyAmount =+ amount;
   }
 
   public Vector<WalletPointer> getAllKnownNeighbors() {
@@ -78,14 +83,17 @@ public class WalletImpl implements Wallet, Comparable<Wallet>{
     return synchronizedNeighbors;
   }
 
-  private void leave (){
-
+  @Override
+  public void updateWallets(int valueToTransform, String source, String target) {
+    for (Wallet wallet : synchronizedNeighbors) {
+      if (wallet.getAddress().equals(source)) {
+        wallet.receiveTransaction(-valueToTransform);
+      }
+      if (wallet.getAddress().equals(target)) {
+        wallet.receiveTransaction(valueToTransform);
+      }
+    }
   }
-
-  private void performTransaction(WalletPointer w, int amount){
-
-  }
-
 
   public void initKnownNodes(Vector<WalletPointer> walletPointers) {
     allKnownNeighbors = walletPointers;
@@ -99,6 +107,9 @@ public class WalletImpl implements Wallet, Comparable<Wallet>{
 
   @Override
   public int compareTo(Wallet o) {
+    if (o == null) {
+      return 1;
+    }
     if (o.getAddress().equals(this.address)) {
       return 0;
     }

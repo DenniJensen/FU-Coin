@@ -4,6 +4,7 @@ import akka.actor.UntypedActor;
 import fucoin.events.AcceptJoin;
 import fucoin.events.FoundWallet;
 import fucoin.events.SyncWallet;
+import fucoin.events.Transaction;
 
 import java.util.Vector;
 
@@ -51,6 +52,16 @@ public class Node extends UntypedActor {
     if (message instanceof SyncWallet) {
       Wallet toSyncWallet = ((SyncWallet) message).getWallet();
       wallet.storeOrUpdateWallet(toSyncWallet);
+    }
+    if (message instanceof Transaction) {
+      Transaction transaction = (Transaction) message;
+      int valueToTransform = transaction.getValue();
+      String source = transaction.getSource();
+      String target = transaction.getTarget();
+      wallet.updateWallets(valueToTransform, source, target);
+    }
+    if (message.equals("leave")) {
+      wallet.removeKnownNeighbor(getSender().path().toString());
     }
   }
 
