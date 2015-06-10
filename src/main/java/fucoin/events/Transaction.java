@@ -3,9 +3,9 @@ package fucoin.events;
 import java.io.Serializable;
 
 public class Transaction implements Serializable {
-  private int value;
-  private String source;
-  private String target;
+  private final int value;
+  private final String source;
+  private final String target;
 
   public Transaction(int value, String source, String target) {
     this.value = value;

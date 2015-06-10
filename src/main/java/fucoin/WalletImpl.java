@@ -2,9 +2,9 @@ package fucoin;
 
 import java.util.Vector;
 
-public class WalletImpl implements Wallet, Comparable<Wallet>{
-  private String address ;
-  private int moneyAmount ;
+public class WalletImpl implements Wallet, Comparable<Wallet> {
+  private final String address;
+  private int moneyAmount;
   private Vector<WalletPointer> allKnownNeighbors;
   private Vector<Wallet> synchronizedNeighbors;
 
@@ -22,8 +22,8 @@ public class WalletImpl implements Wallet, Comparable<Wallet>{
 
   @Override
   public Wallet searchWallet(String address) {
-    for(Wallet wallet : synchronizedNeighbors) {
-      if(wallet.getAddress().equals(address)) {
+    for (Wallet wallet : synchronizedNeighbors) {
+      if (wallet.getAddress().equals(address)) {
         return wallet;
       }
     }
@@ -32,7 +32,7 @@ public class WalletImpl implements Wallet, Comparable<Wallet>{
 
   @Override
   public void storeOrUpdateWallet(Wallet w) {
-    if (!synchronizedNeighbors.contains(w)){
+    if (!synchronizedNeighbors.contains(w)) {
       this.synchronizedNeighbors.add(w);
     } else {
       for (Wallet wallet : synchronizedNeighbors) {
@@ -68,7 +68,7 @@ public class WalletImpl implements Wallet, Comparable<Wallet>{
 
   @Override
   public void receiveTransaction(int amount) {
-    this.moneyAmount =+ amount;
+    this.moneyAmount = +amount;
   }
 
   public Vector<WalletPointer> getAllKnownNeighbors() {

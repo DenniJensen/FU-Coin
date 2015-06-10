@@ -8,7 +8,8 @@ public class WalletPointer implements Serializable {
   public WalletPointer(String address) {
     this.address = address;
   }
-   public String getAddress() {
+
+  public String getAddress() {
     return address;
   }
 }

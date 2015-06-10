@@ -5,7 +5,7 @@ import fucoin.Wallet;
 import java.io.Serializable;
 
 public class SyncWallet implements Serializable {
-  private Wallet wallet;
+  private final Wallet wallet;
 
   public SyncWallet(Wallet wallet) {
     this.wallet = wallet;

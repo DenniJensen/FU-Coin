@@ -5,7 +5,7 @@ import fucoin.Wallet;
 import java.io.Serializable;
 
 public class FoundWallet implements Serializable {
-  private Wallet wallet;
+  private final Wallet wallet;
 
   public FoundWallet(Wallet wallet) {
     this.wallet = wallet;

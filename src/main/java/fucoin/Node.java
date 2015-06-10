@@ -13,6 +13,10 @@ public class Node extends UntypedActor {
   private Wallet wallet;
   private int numberOfSearchRequest;
 
+  public Node() {
+
+  }
+
   public Node(String address) {
     wallet = new WalletImpl(address);
   }
@@ -24,10 +28,10 @@ public class Node extends UntypedActor {
   @Override
   public void onReceive(Object message) {
     if (message.equals("join")) {
-      handleJoinRequest();
+      handleJoinEvent();
     }
     if (message instanceof AcceptJoin) {
-      handleAcceptJoinRequest((AcceptJoin) message);
+      handleAcceptJoinEvent((AcceptJoin) message);
     }
     if (message.equals("searchMe")) {
       Wallet foundWallet = wallet.searchWallet(getSender().path().toString());
@@ -35,48 +39,54 @@ public class Node extends UntypedActor {
       getSender().tell(fw, getSelf());
     }
     if (message instanceof FoundWallet) {
-      FoundWallet foundWallet = (FoundWallet) message;
-      if (numberOfSearchRequest > 0) {
-        if (foundWallet.getWallet() == null) {
-          numberOfSearchRequest--;
-          if (numberOfSearchRequest == 0) {
-            synchronizeOwnWalletToAllNodes();
-          }
-        } else {
-          numberOfSearchRequest = 0;
-          wallet = foundWallet.getWallet();
-          synchronizeOwnWalletToAllNodes();
-        }
-      }
+      handleFoundWalletEvent((FoundWallet) message);
     }
     if (message instanceof SyncWallet) {
       Wallet toSyncWallet = ((SyncWallet) message).getWallet();
       wallet.storeOrUpdateWallet(toSyncWallet);
     }
     if (message instanceof Transaction) {
-      Transaction transaction = (Transaction) message;
-      int valueToTransform = transaction.getValue();
-      String source = transaction.getSource();
-      String target = transaction.getTarget();
-      wallet.updateWallets(valueToTransform, source, target);
+      handleTransactionEvent((Transaction) message);
     }
     if (message.equals("leave")) {
       wallet.removeKnownNeighbor(getSender().path().toString());
     }
   }
 
+  private void handleFoundWalletEvent(FoundWallet foundWallet) {
+    if (numberOfSearchRequest > 0) {
+      if (foundWallet.getWallet() == null) {
+        numberOfSearchRequest--;
+        if (numberOfSearchRequest == 0) {
+          synchronizeOwnWalletToAllNodes();
+        }
+      } else {
+        numberOfSearchRequest = 0;
+        wallet = foundWallet.getWallet();
+        synchronizeOwnWalletToAllNodes();
+      }
+    }
+  }
+
+  private void handleTransactionEvent(Transaction transaction) {
+    int valueToTransform = transaction.getValue();
+    String source = transaction.getSource();
+    String target = transaction.getTarget();
+    wallet.updateWallets(valueToTransform, source, target);
+  }
+
   private void synchronizeOwnWalletToAllNodes() {
     notifyAll(new SyncWallet(this.wallet));
   }
 
-  private void handleJoinRequest() {
+  private void handleJoinEvent() {
     String acceptedAddress = getSender().path().toString();
     WalletPointer walletPointer = new WalletPointer(acceptedAddress);
     AcceptJoin acceptJoin = new AcceptJoin(wallet.join(walletPointer), acceptedAddress);
     getSender().tell(acceptJoin, getSelf());
   }
 
-  private void handleAcceptJoinRequest(AcceptJoin acceptJoin) {
+  private void handleAcceptJoinEvent(AcceptJoin acceptJoin) {
     initKnownNodes(acceptJoin);
     searchOwnWallInNetwork();
   }
